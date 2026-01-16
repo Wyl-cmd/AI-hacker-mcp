@@ -13,13 +13,13 @@ MCP服务器，用于在iFlow CLI平台上进行AI辅助的渗透测试。
 ### 1. 安装
 
 ```bash
-npm install -g @your-org/kali-mcp-server
+npm install -g @wyl-cmd/ai-hacker-mcp
 ```
 
 或使用npx直接运行：
 
 ```bash
-npx -y @your-org/kali-mcp-server
+npx -y @wyl-cmd/ai-hacker-mcp
 ```
 
 ### 2. 配置iFlow CLI
@@ -31,7 +31,7 @@ npx -y @your-org/kali-mcp-server
   "mcpServers": {
     "kali-pentest": {
       "command": "npx",
-      "args": ["-y", "@your-org/kali-mcp-server"]
+      "args": ["-y", "@wyl-cmd/ai-hacker-mcp"]
     }
   }
 }
