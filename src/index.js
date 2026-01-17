@@ -10,7 +10,7 @@ import {
 const server = new Server(
   {
     name: 'kali-mcp-server',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     capabilities: {
@@ -49,19 +49,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { category } = args || {};
         
         return new Promise((resolve, reject) => {
-          let command = "dpkg -l | grep -E 'kali|metasploit|nmap|burpsuite|sqlmap|nikto|hydra|john|aircrack|wireshark|tcpdump|netcat|socat|gobuster|dirb|ffuf|wpscan|nikto|whatweb|enum4linux|smbclient|nbtscan|rpcclient|showmount|snmpwalk|onesixtyone|ike-scan|sslscan|testssl|nuclei|subfinder|amass|httpx|ffuf|gobuster|dirsearch|wfuzz|feroxbuster|rustscan|masscan|unicornscan|zmap|arp-scan|netdiscover|fping|hping3|scapy|tcping|mtr|traceroute|dig|nslookup|host|whois|curl|wget|git|svn|hg' | grep -E '^ii' | awk '{print $2}'";
+          let command;
           
           if (category) {
-            command = `dpkg -l | grep -E "kali|${category}" | grep -E "^ii" | awk '{print $2}'`;
+            command = `dpkg -l | grep -i "${category}" | grep "^ii" | awk '{print $2}'`;
+          } else {
+            command = 'dpkg -l | grep "^ii" | awk \'{print $2}\'';
           }
           
           exec(command, { shell: '/bin/bash' }, (error, stdout, stderr) => {
             if (error) {
+              console.error(`Command failed: ${command}`);
+              console.error(`Error: ${error.message}`);
+              console.error(`Stderr: ${stderr}`);
               resolve({
                 content: [
                   {
                     type: 'text',
-                    text: `Error listing Kali tools: ${error.message}\nStderr: ${stderr}`,
+                    text: `Error listing Kali tools: ${error.message}\nCommand: ${command}\nStderr: ${stderr}`,
                   },
                 ],
                 isError: true,
@@ -74,6 +79,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 message: `Found ${tools.length} Kali security tools installed on this system. You can use these tools through terminal via iflow-cli.`
               };
               
+              console.error(`Successfully listed ${tools.length} tools`);
               resolve({
                 content: [
                   {
@@ -91,6 +97,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error) {
+    console.error(`Handler error: ${error.message}`);
     return {
       content: [
         {
@@ -104,9 +111,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error('Kali MCP Server running on stdio');
+  try {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error('Kali MCP Server running on stdio');
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
 main().catch((error) => {
