@@ -1,5 +1,5 @@
 {
-  "name": "@wyl-cmd/ai-hacker-mcp",
+  "name": "ai-hacker-mcp",
   "version": "1.0.0",
   "description": "MCP server for Kali Linux penetration testing - provides system prompts and tool listing for AI-assisted security testing",
   "type": "module",
