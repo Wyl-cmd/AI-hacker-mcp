@@ -62,7 +62,7 @@ npx -y @wyl-cmd/ai-hacker-mcp
 
 在iFlow CLI中：
 
-```
+```text
 > 开始对 target.com 进行渗透测试
 
 AI会自动：
