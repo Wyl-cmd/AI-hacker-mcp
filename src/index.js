@@ -24,7 +24,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: 'list_kali_tools',
-        description: 'List available Kali Linux security and penetration testing tools installed on the system',
+        description: 'List available Kali Linux security and penetration testing tools installed on system',
         inputSchema: {
           type: 'object',
           properties: {
@@ -49,7 +49,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { category } = args || {};
         
         return new Promise((resolve, reject) => {
-          let command = 'dpkg -l | grep -E "kali|metasploit|nmap|burpsuite|sqlmap|nikto|hydra|john|aircrack|wireshark|tcpdump|netcat|socat|gobuster|dirb|ffuf|wpscan|nikto|whatweb|enum4linux|smbclient|nbtscan|rpcclient|showmount|snmpwalk|onesixtyone|ike-scan|sslscan|testssl|nuclei|subfinder|amass|httpx|ffuf|gobuster|dirsearch|wfuzz|feroxbuster|rustscan|masscan|unicornscan|zmap|arp-scan|netdiscover|fping|hping3|scapy|tcping|mtr|traceroute|dig|nslookup|host|whois|curl|wget|git|svn|hg" | grep -E "^ii" | awk \'{print $2}\'';
+          let command = "dpkg -l | grep -E 'kali|metasploit|nmap|burpsuite|sqlmap|nikto|hydra|john|aircrack|wireshark|tcpdump|netcat|socat|gobuster|dirb|ffuf|wpscan|nikto|whatweb|enum4linux|smbclient|nbtscan|rpcclient|showmount|snmpwalk|onesixtyone|ike-scan|sslscan|testssl|nuclei|subfinder|amass|httpx|ffuf|gobuster|dirsearch|wfuzz|feroxbuster|rustscan|masscan|unicornscan|zmap|arp-scan|netdiscover|fping|hping3|scapy|tcping|mtr|traceroute|dig|nslookup|host|whois|curl|wget|git|svn|hg' | grep -E '^ii' | awk '{print $2}'";
           
           if (category) {
             command = `dpkg -l | grep -E "kali|${category}" | grep -E "^ii" | awk '{print $2}'`;
