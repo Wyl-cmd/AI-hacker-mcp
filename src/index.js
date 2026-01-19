@@ -5,6 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListPromptsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 const server = new Server(
@@ -15,6 +16,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      prompts: {},
     },
   }
 );
@@ -31,6 +33,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             category: {
               type: 'string',
               description: 'Filter tools by category (e.g., information-gathering, vulnerability-analysis, web-applications, password-attacks, exploitation, etc.)',
+            },
+          },
+        },
+      },
+    ],
+  };
+});
+
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  return {
+    prompts: [
+      {
+        name: 'pentest-role',
+        description: 'Penetration testing role-playing prompt',
+        arguments: {
+          type: 'object',
+          properties: {
+            target: {
+              type: 'string',
+              description: 'Target website for testing',
             },
           },
         },
