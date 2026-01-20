@@ -11,7 +11,7 @@ import {
 const server = new Server(
   {
     name: 'kali-mcp-server',
-    version: '1.0.2',
+    version: '1.0.3',
   },
   {
     capabilities: {

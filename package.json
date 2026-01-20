@@ -1,6 +1,6 @@
 {
   "name": "ai-hacker-mcp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server for Kali Linux penetration testing - provides system prompts and tool listing for AI-assisted security testing",
   "type": "module",
   "main": "./src/index.js",
@@ -18,7 +18,8 @@
     "penetration-testing",
     "security",
     "iflow-cli",
-    "ai-pentesting"
+    "ai-pentesting",
+    "burp-suite"
   ],
   "author": "Wyl-cmd",
   "license": "MIT",
