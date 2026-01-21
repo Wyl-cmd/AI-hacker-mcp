@@ -1,4 +1,4 @@
-# Kali MCP Server - Python Version v2.0.0
+# Kali MCP Server - Python Version v2.1.0
 
 ## 功能说明
 
@@ -13,15 +13,13 @@
 - **WebSocket服务器** - 双向实时通信（ws://localhost:9878）
 - **HTTP服务器** - 处理MCP HTTP请求（http://localhost:9879）
 
-#### 2. 工具集（19个工具）
+#### 2. 工具集（17个工具）
 
 ##### Kali Linux 工具管理
 
 | 工具名称 | 描述 | 参数 |
 |---------|------|------|
-| `list_kali_tools` | 列出Kali系统已安装的安全工具 | `category` (可选) - 按类别过滤 |
 | `run_security_tool` | 执行任意安全工具 | `tool` (必需), `arguments`, `target` |
-| `list_security_categories` | 列出可用安全工具类别 | 无 |
 
 ##### Burp Suite 集成工具
 
@@ -59,13 +57,27 @@
 | `set_proxy_intercept_state` | 启用或禁用Burp代理拦截 | `intercepting` (必需) |
 | `set_task_execution_engine_state` | 设置Burp任务执行引擎状态（暂停或未暂停） | `running` (必需) |
 
-#### 3. 提示词资源（2个）
+##### Burp Suite 配置和历史记录工具
 
-- **pentest-role** - 渗透测试角色扮演提示词
-  - 参数：`target` - 目标网站
-  
-- **burp-assistant** - Burp Suite助手提示词
+| 工具名称 | 描述 | 参数 |
+|---------|------|------|
+| `output_project_options` | 输出项目级配置（JSON格式） | 无 |
+| `output_user_options` | 输出用户级配置（JSON格式） | 无 |
+| `set_project_options` | 设置项目级配置（JSON格式） | `json` |
+| `set_user_options` | 设置用户级配置（JSON格式） | `json` |
+| `get_scanner_issues` | 显示扫描器识别的问题 | `count`, `offset` |
+| `get_proxy_http_history` | 显示代理HTTP历史记录 | `count`, `offset` |
+| `get_proxy_http_history_regex` | 使用正则表达式过滤代理HTTP历史 | `regex`, `count`, `offset` |
+| `get_proxy_websocket_history` | 显示代理WebSocket历史记录 | `count`, `offset` |
+| `get_proxy_websocket_history_regex` | 使用正则表达式过滤代理WebSocket历史 | `regex`, `count`, `offset` |
+| `get_active_editor_contents` | 输出用户的活动消息编辑器内容 | 无 |
+| `set_active_editor_contents` | 设置用户的活动消息编辑器内容 | `text` |
+
+#### 3. 提示词资源（1个）
+
+- **pentest-role** - 渗透测试角色扮演提示词，包含Burp Suite安全测试助手功能
   - 参数：`target` - 目标网站，`scan_type` - 扫描类型
+  - 包含完整的渗透测试流程和Burp Suite功能说明
 
 #### 4. 配置管理
 
@@ -104,12 +116,12 @@ python -m venv .venv
 
 3. **激活虚拟环境**
 
-Windows:
+**Windows:**
 ```bash
-.venv\Scripts\activate.bat
+venv\Scripts\activate.bat
 ```
 
-Linux/Mac:
+**Linux/Mac:**
 ```bash
 source .venv/bin/activate
 ```
@@ -161,9 +173,10 @@ python src/mcp_server.py
 {
   "method": "tools/call",
   "params": {
-    "name": "list_kali_tools",
+    "name": "run_security_tool",
     "arguments": {
-      "category": "web-applications"
+      "tool": "nmap",
+      "target": "192.168.1.1"
     }
   }
 }
@@ -406,8 +419,7 @@ kali-tool/
 ├── requirements.txt       # Python依赖
 ├── start.bat             # Windows启动脚本
 ├── start.sh              # Linux/Mac启动脚本
-├── test_server.py        # 测试脚本
-└── README_PYTHON.md      # 本文档
+└── README.md             # 本文档
 ```
 
 ## 与PortSwigger官方扩展对比
@@ -424,19 +436,20 @@ kali-tool/
 | 代理拦截控制 | ✅ | ✅ |
 | 任务引擎控制 | ✅ | ✅ |
 | 配置管理 | ✅ | ✅ |
-| Kali工具执行 | ❌ | ✅ |
-| 扫描器问题（专业版） | ✅ | ❌ |
-| 代理历史记录 | ✅ | ❌ |
-| WebSocket历史记录 | ✅ | ❌ |
-| 配置编辑保护 | ✅ | ✅ |
+| 项目配置导出 | ✅ | ✅ |
+| 用户配置导出 | ✅ | ✅ |
+| 扫描器问题 | ✅ | ✅ |
+| 代理HTTP历史 | ✅ | ✅ |
+| 代理WebSocket历史 | ✅ | ✅ |
+| 活动编辑器内容 | ✅ | ✅ |
 | Stdio传输 | ✅ | ✅ |
 | SSE传输 | ✅ | ✅ |
-| WebSocket传输 | ❌ | ✅ |
-| HTTP传输 | ❌ | ✅ |
+| WebSocket传输 | ✅ | ✅ |
+| HTTP传输 | ✅ | ✅ |
 
-## 新增功能（v2.0.0）
+## 新增功能（v2.1.0）
 
-相比v1.0.4，v2.0.0新增了以下功能：
+相比v1.0.4，v2.1.0新增了以下功能：
 
 1. **HTTP请求工具** - 支持HTTP/1.1和HTTP/2请求发送
 2. **编码/解码工具** - URL和Base64编码/解码
@@ -444,6 +457,7 @@ kali-tool/
 4. **Burp Suite深度集成** - Repeater、Intruder、代理拦截、任务引擎控制
 5. **WebSocket支持** - 新增WebSocket服务器支持
 6. **增强的HTTP服务器** - 返回更多服务器信息
+7. **配置和历史记录** - 项目/用户配置管理、扫描器问题、代理历史记录、活动编辑器内容
 
 ## 测试
 
@@ -454,9 +468,10 @@ python test_server.py
 ```
 
 测试覆盖：
+
 - ✓ 服务器初始化
-- ✓ 19个工具注册
-- ✓ 2个提示词注册
+- ✓ 17个工具注册
+- ✓ 1个提示词注册
 - ✓ 所有处理器功能
 - ✓ 编码/解码工具
 - ✓ 随机字符串生成
