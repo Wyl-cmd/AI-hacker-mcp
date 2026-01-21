@@ -1,0 +1,9 @@
+@echo off
+echo Activating Python virtual environment...
+call .venv\Scripts\activate.bat
+
+echo Installing dependencies...
+pip install -r requirements.txt
+
+echo Starting Kali MCP Server...
+python src\mcp_server_fastmcp.py
