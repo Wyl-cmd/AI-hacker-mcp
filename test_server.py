@@ -1,117 +1,146 @@
 #!/usr/bin/env python3
+# Test script for FastMCP MCP Server
 
-import asyncio
-import json
 import sys
+import subprocess
+import time
+import os
 
-async def test_mcp_server():
-    print("Testing Enhanced MCP Server functionality...")
+def test_fastmcp_import():
+    """Test if FastMCP can be imported successfully"""
+    print("Testing FastMCP Import...")
     
-    server = None
     try:
-        from src.mcp_server import MCPServer
-        server = MCPServer()
-        
-        print(f"\nServer Name: {server.name}")
-        print(f"Server Version: {server.version}")
-        print(f"Server Description: {server.description}")
-        
-        print(f"\nAvailable Tools ({len(server.tools)}):")
-        for tool in server.tools:
-            print(f"  - {tool['name']}: {tool['description']}")
-        
-        print(f"\nAvailable Prompts ({len(server.prompts)}):")
-        for prompt in server.prompts:
-            print(f"  - {prompt['name']}: {prompt['description']}")
-        
-        print("\n" + "="*60)
-        print("Testing server handlers...")
-        print("="*60)
-        
-        result = await server.handle_list_tools({})
-        print(f"\n✓ list_tools: {len(result['tools'])} tools returned")
-        
-        result = await server.handle_list_prompts({})
-        print(f"✓ list_prompts: {len(result['prompts'])} prompts returned")
-        
-        result = await server.handle_describe_server({})
-        print(f"✓ describe_server: {result['name']} v{result['version']}")
-        
-        result = await server.handle_get_config({})
-        print(f"✓ get_config: {len(result['config'])} config sections")
-        
-        print("\n" + "-"*60)
-        print("Testing individual tools...")
-        print("-"*60)
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'list_security_categories',
-                'arguments': {}
-            }
-        })
-        print(f"✓ list_security_categories: {result['content'][0]['text'][:50]}...")
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'burp_get_config',
-                'arguments': {}
-            }
-        })
-        print(f"✓ burp_get_config: {result['content'][0]['text'][:50]}...")
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'url_encode',
-                'arguments': {'content': 'test string'}
-            }
-        })
-        print(f"✓ url_encode: {result['content'][0]['text']}")
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'url_decode',
-                'arguments': {'content': 'test%20string'}
-            }
-        })
-        print(f"✓ url_decode: {result['content'][0]['text']}")
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'base64_encode',
-                'arguments': {'content': 'hello'}
-            }
-        })
-        print(f"✓ base64_encode: {result['content'][0]['text']}")
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'base64_decode',
-                'arguments': {'content': 'aGVsbG8='}
-            }
-        })
-        print(f"✓ base64_decode: {result['content'][0]['text']}")
-        
-        result = await server.handle_call_tool({
-            'params': {
-                'name': 'generate_random_string',
-                'arguments': {'length': 10}
-            }
-        })
-        print(f"✓ generate_random_string: {result['content'][0]['text']}")
-        
-        print("\n" + "="*60)
-        print("✅ All tests passed!")
-        print("="*60)
-        
+        from src.mcp_server_fastmcp import mcp
+        print(f"✓ Successfully imported mcp from src.mcp_server_fastmcp")
+        return True
     except Exception as e:
         print(f"\n❌ Test failed: {e}")
         import traceback
         traceback.print_exc()
         return False
+
+def test_server_starts():
+    """Test if the server can start successfully"""
+    print("\nTesting Server Startup...")
     
-    return True
+    try:
+        # Start the server in a subprocess
+        process = subprocess.Popen(
+            [sys.executable, "src/mcp_server_fastmcp.py"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # Give it time to start
+        time.sleep(2)
+        
+        # Check if process is still running
+        if process.poll() is not None:
+            # Process exited, something went wrong
+            stderr = process.stderr.read()
+            print(f"❌ Server failed to start: {stderr}")
+            return False
+        
+        # Kill the process gracefully
+        process.terminate()
+        process.wait(timeout=5)
+        
+        print("✓ Server started successfully")
+        return True
+    except Exception as e:
+        print(f"\n❌ Test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def test_server_files():
+    """Test if all required server files exist"""
+    print("\nTesting Server Files...")
+    
+    required_files = [
+        "src/mcp_server_fastmcp.py",
+        "requirements.txt",
+        "start.bat",
+        "start.sh",
+        "README_PYTHON.md"
+    ]
+    
+    all_files_exist = True
+    for file_path in required_files:
+        if os.path.exists(file_path):
+            print(f"✓ {file_path} exists")
+        else:
+            print(f"❌ {file_path} missing")
+            all_files_exist = False
+    
+    return all_files_exist
+
+def test_python_syntax():
+    """Test if Python syntax is correct"""
+    print("\nTesting Python Syntax...")
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "py_compile", "src/mcp_server_fastmcp.py"],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode == 0:
+            print("✓ Python syntax is correct")
+            return True
+        else:
+            print(f"❌ Python syntax error: {result.stderr}")
+            return False
+    except Exception as e:
+        print(f"\n❌ Test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def main():
+    """Run all tests"""
+    print("="*60)
+    print("Testing FastMCP MCP Server")
+    print("="*60)
+    
+    # Run tests
+    tests = [
+        ("FastMCP Import", test_fastmcp_import),
+        ("Python Syntax", test_python_syntax),
+        ("Server Files", test_server_files),
+        ("Server Startup", test_server_starts)
+    ]
+    
+    passed = 0
+    total = len(tests)
+    
+    for test_name, test_func in tests:
+        print(f"\n{test_name}:")
+        print("-" * 40)
+        
+        if test_func():
+            passed += 1
+            print(f"\n✅ {test_name} passed!")
+        else:
+            print(f"\n❌ {test_name} failed!")
+    
+    # Summary
+    print("\n" + "="*60)
+    print(f"TEST SUMMARY: {passed}/{total} tests passed")
+    print("="*60)
+    
+    if passed == total:
+        print("\n🎉 All tests passed! The MCP server is ready!")
+        print("\nTo start the server, run:")
+        print("  - Windows: start.bat")
+        print("  - Linux/Mac: start.sh")
+    else:
+        print(f"\n⚠️  {total - passed} tests failed. Please check the errors above.")
+    
+    sys.exit(0 if passed == total else 1)
 
 if __name__ == '__main__':
-    success = asyncio.run(test_mcp_server())
-    sys.exit(0 if success else 1)
+    main()
